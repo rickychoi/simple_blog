@@ -1,6 +1,12 @@
 class ArticlesController < ApplicationController
   # GET /articles
   # GET /articles.json
+  
+
+  before_filter :find_article, :only => [:edit, :update, :destroy]
+  before_filter :capitalize, :only => :index
+  
+  
   def index
     @articles = Article.all
 
@@ -34,7 +40,7 @@ class ArticlesController < ApplicationController
 
   # GET /articles/1/edit
   def edit
-    @article = Article.find(params[:id])
+
   end
 
   # POST /articles
@@ -56,8 +62,6 @@ class ArticlesController < ApplicationController
   # PUT /articles/1
   # PUT /articles/1.json
   def update
-    @article = Article.find(params[:id])
-
     respond_to do |format|
       if @article.update_attributes(params[:article])
         format.html { redirect_to @article, notice: 'Article was successfully updated.' }
@@ -72,12 +76,33 @@ class ArticlesController < ApplicationController
   # DELETE /articles/1
   # DELETE /articles/1.json
   def destroy
-    @article = Article.find(params[:id])
-    @article.destroy
+      @article.destroy
 
     respond_to do |format|
       format.html { redirect_to articles_url }
       format.json { head :no_content }
+    end
+  end
+  
+  private
+  def capitalize
+    @articles = Article.all.each { |x| title.capitalize! }
+  end
+  
+  def find_article
+    @article = Article.find(params[:id])
+  end
+  
+  def whoops
+    begin
+      yield
+    rescue
+      if params[:actions] => "index"
+        render :text = "yea son"
+      else 
+        flash[:notice] = "you done bad"
+        redirect_to :index
+      end
     end
   end
 end

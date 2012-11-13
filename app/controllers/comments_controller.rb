@@ -12,6 +12,7 @@ class CommentsController < ApplicationController
       else
         format.html { redirect_to @comment.article }
         format.json { render json: @comment.errors, status: :unprocessable_entity }
+        flash[:notice] = "comment too short, try again"
       end
     end
   end
